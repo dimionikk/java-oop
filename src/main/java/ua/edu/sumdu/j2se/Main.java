@@ -4,30 +4,85 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Консольний драйвер програми: меню для створення працівників
+ * і виведення їх списку.
+ */
 public class Main {
+
+    /**
+     * Точка входу. Показує меню, доки користувач не обере вихід.
+     *
+     * @param args аргументи командного рядка (не використовуються)
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        int count = readInt(scanner, "Кількість працівників: ", 1, 100);
-
         List<Employee> employees = new ArrayList<>();
 
-        for (int i = 0; i < count; i++) {
-            System.out.println("Працівник " + (i + 1) + ":");
-            String name = readText(scanner, "  Ім'я: ");
-            String position = readText(scanner, "  Посада: ");
-            int age = readInt(scanner, "  Вік: ", 16, 100);
-            double salary = readDouble(scanner, "  Зарплата: ");
-            String email = readText(scanner, "  Email: ");
-            employees.add(new Employee(name, position, age, salary, email));
-        }
+        while (true) {
+            System.out.println();
+            System.out.println("1 - Створити працівника");
+            System.out.println("2 - Вивести всіх працівників");
+            System.out.println("0 - Вихід");
+            int choice = readInt(scanner, "Ваш вибір: ");
 
-        System.out.println("\nСписок працівників:");
-        for (Employee employee : employees) {
-            System.out.println(employee);
+            switch (choice) {
+                case 1 -> createEmployee(scanner, employees);
+                case 2 -> printEmployees(employees);
+                case 0 -> {
+                    System.out.println("Роботу завершено.");
+                    return;
+                }
+                default -> System.out.println("Немає такого пункту меню.");
+            }
         }
     }
 
+    /**
+     * Зчитує дані працівника з клавіатури і додає його до списку.
+     * Якщо дані не проходять перевірку в {@link Employee},
+     * виводить повідомлення про помилку і нічого не додає.
+     *
+     * @param scanner   джерело введення
+     * @param employees список, до якого додається працівник
+     */
+    private static void createEmployee(Scanner scanner, List<Employee> employees) {
+        String name = readText(scanner, "  Ім'я: ");
+        String position = readText(scanner, "  Посада: ");
+        int age = readInt(scanner, "  Вік: ");
+        double salary = readDouble(scanner, "  Зарплата: ");
+        String email = readText(scanner, "  Email: ");
+
+        try {
+            employees.add(new Employee(name, position, age, salary, email));
+            System.out.println("Працівника додано.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Виводить усіх працівників зі списку з порядковими номерами.
+     *
+     * @param employees список працівників
+     */
+    private static void printEmployees(List<Employee> employees) {
+        if (employees.isEmpty()) {
+            System.out.println("Список порожній.");
+            return;
+        }
+        for (int i = 0; i < employees.size(); i++) {
+            System.out.println((i + 1) + ". " + employees.get(i));
+        }
+    }
+
+    /**
+     * Зчитує непорожній рядок, повторюючи запит, доки рядок порожній.
+     *
+     * @param scanner джерело введення
+     * @param prompt  текст запиту
+     * @return введений рядок без пробілів по краях
+     */
     private static String readText(Scanner scanner, String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -39,32 +94,39 @@ public class Main {
         }
     }
 
-    private static int readInt(Scanner scanner, String prompt, int min, int max) {
+    /**
+     * Зчитує ціле число, повторюючи запит при нечисловому або порожньому введенні.
+     *
+     * @param scanner джерело введення
+     * @param prompt  текст запиту
+     * @return введене ціле число
+     */
+    private static int readInt(Scanner scanner, String prompt) {
         while (true) {
             System.out.print(prompt);
             String line = scanner.nextLine().trim();
             try {
-                int value = Integer.parseInt(line);
-                if (value >= min && value <= max) {
-                    return value;
-                }
-                System.out.println("  Введіть число від " + min + " до " + max + ".");
+                return Integer.parseInt(line);
             } catch (NumberFormatException e) {
                 System.out.println("  Це не ціле число.");
             }
         }
     }
 
+    /**
+     * Зчитує дробове число (через кому або крапку),
+     * повторюючи запит при нечисловому або порожньому введенні.
+     *
+     * @param scanner джерело введення
+     * @param prompt  текст запиту
+     * @return введене число
+     */
     private static double readDouble(Scanner scanner, String prompt) {
         while (true) {
             System.out.print(prompt);
             String line = scanner.nextLine().trim().replace(',', '.');
             try {
-                double value = Double.parseDouble(line);
-                if (Double.isFinite(value) && value >= 0) {
-                    return value;
-                }
-                System.out.println("  Значення не може бути від'ємним.");
+                return Double.parseDouble(line);
             } catch (NumberFormatException e) {
                 System.out.println("  Це не число.");
             }
