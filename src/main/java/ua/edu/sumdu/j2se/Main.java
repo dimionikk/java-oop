@@ -1,4 +1,4 @@
-package ua.edu.sumdu.j2se.pr4;
+package ua.edu.sumdu.j2se;
 
 import java.util.ArrayList;
 import java.util.List;
