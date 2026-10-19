@@ -1,62 +1,142 @@
 package ua.edu.sumdu.j2se;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
+/**
+ * Працівник з ім'ям, посадою, віком, зарплатою та email.
+ * Усі значення перевіряються в конструкторі та сетерах,
+ * тому об'єкт не може містити некоректних даних.
+ */
 public class Employee {
+    private static final int MIN_AGE = 16;
+    private static final int MAX_AGE = 100;
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("[^@\\s]+@[^@\\s]+\\.[^@\\s]+");
+
     private String name;
     private String position;
     private int age;
     private double salary;
     private String email;
 
+    /**
+     * Створює працівника з перевіркою всіх параметрів.
+     *
+     * @param name     ім'я, не порожнє
+     * @param position посада, не порожня
+     * @param age      вік від 16 до 100
+     * @param salary   зарплата, невід'ємне скінченне число
+     * @param email    email у форматі name@domain.com
+     * @throws IllegalArgumentException якщо хоча б один параметр некоректний
+     */
     public Employee(String name, String position, int age, double salary, String email) {
-        this.name = name;
-        this.position = position;
-        this.age = age;
-        this.salary = salary;
-        this.email = email;
+        this.name = requireText(name, "Ім'я");
+        this.position = requireText(position, "Посада");
+        this.age = requireAge(age);
+        this.salary = requireSalary(salary);
+        this.email = requireEmail(email);
     }
 
+    /**
+     * Повертає ім'я працівника.
+     *
+     * @return ім'я
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Встановлює ім'я працівника.
+     *
+     * @param name нове ім'я, не порожнє
+     * @throws IllegalArgumentException якщо ім'я null або порожнє
+     */
     public void setName(String name) {
-        this.name = name;
+        this.name = requireText(name, "Ім'я");
     }
 
+    /**
+     * Повертає посаду працівника.
+     *
+     * @return посада
+     */
     public String getPosition() {
         return position;
     }
 
+    /**
+     * Встановлює посаду працівника.
+     *
+     * @param position нова посада, не порожня
+     * @throws IllegalArgumentException якщо посада null або порожня
+     */
     public void setPosition(String position) {
-        this.position = position;
+        this.position = requireText(position, "Посада");
     }
 
+    /**
+     * Повертає вік працівника.
+     *
+     * @return вік
+     */
     public int getAge() {
         return age;
     }
 
+    /**
+     * Встановлює вік працівника.
+     *
+     * @param age новий вік від 16 до 100
+     * @throws IllegalArgumentException якщо вік поза межами
+     */
     public void setAge(int age) {
-        this.age = age;
+        this.age = requireAge(age);
     }
 
+    /**
+     * Повертає зарплату працівника.
+     *
+     * @return зарплата
+     */
     public double getSalary() {
         return salary;
     }
 
+    /**
+     * Встановлює зарплату працівника.
+     *
+     * @param salary нова зарплата, невід'ємне скінченне число
+     * @throws IllegalArgumentException якщо зарплата від'ємна, NaN або нескінченна
+     */
     public void setSalary(double salary) {
-        this.salary = salary;
+        this.salary = requireSalary(salary);
     }
 
+    /**
+     * Повертає email працівника.
+     *
+     * @return email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Встановлює email працівника.
+     *
+     * @param email новий email у форматі name@domain.com
+     * @throws IllegalArgumentException якщо email порожній або має неправильний формат
+     */
     public void setEmail(String email) {
-        this.email = email;
+        this.email = requireEmail(email);
     }
 
+    /**
+     * Повертає текстове представлення працівника з усіма полями.
+     *
+     * @return рядок з даними працівника
+     */
     @Override
     public String toString() {
         return "Employee{" +
@@ -68,6 +148,12 @@ public class Employee {
                 '}';
     }
 
+    /**
+     * Порівнює працівників за всіма полями.
+     *
+     * @param o об'єкт для порівняння
+     * @return true, якщо об'єкт є працівником з такими самими даними
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -79,8 +165,71 @@ public class Employee {
                 && Objects.equals(email, employee.email);
     }
 
+    /**
+     * Обчислює хеш-код за всіма полями, узгоджено з {@link #equals(Object)}.
+     *
+     * @return хеш-код
+     */
     @Override
     public int hashCode() {
         return Objects.hash(name, position, age, salary, email);
+    }
+
+    /**
+     * Перевіряє, що рядок не null і не порожній.
+     *
+     * @param value     рядок для перевірки
+     * @param fieldName назва поля для повідомлення про помилку
+     * @return рядок без пробілів по краях
+     * @throws IllegalArgumentException якщо рядок null або порожній
+     */
+    private static String requireText(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("Поле \"" + fieldName + "\" не може бути порожнім.");
+        }
+        return value.trim();
+    }
+
+    /**
+     * Перевіряє, що вік у допустимих межах.
+     *
+     * @param age вік для перевірки
+     * @return той самий вік
+     * @throws IllegalArgumentException якщо вік менший за 16 або більший за 100
+     */
+    private static int requireAge(int age) {
+        if (age < MIN_AGE || age > MAX_AGE) {
+            throw new IllegalArgumentException("Вік має бути від " + MIN_AGE + " до " + MAX_AGE + ".");
+        }
+        return age;
+    }
+
+    /**
+     * Перевіряє, що зарплата є невід'ємним скінченним числом.
+     *
+     * @param salary зарплата для перевірки
+     * @return та сама зарплата
+     * @throws IllegalArgumentException якщо зарплата від'ємна, NaN або нескінченна
+     */
+    private static double requireSalary(double salary) {
+        if (!Double.isFinite(salary) || salary < 0) {
+            throw new IllegalArgumentException("Зарплата має бути невід'ємним числом.");
+        }
+        return salary;
+    }
+
+    /**
+     * Перевіряє, що email не порожній і має формат name@domain.com.
+     *
+     * @param email email для перевірки
+     * @return email без пробілів по краях
+     * @throws IllegalArgumentException якщо email порожній або має неправильний формат
+     */
+    private static String requireEmail(String email) {
+        String value = requireText(email, "Email");
+        if (!EMAIL_PATTERN.matcher(value).matches()) {
+            throw new IllegalArgumentException("Email має бути у форматі name@domain.com.");
+        }
+        return value;
     }
 }
