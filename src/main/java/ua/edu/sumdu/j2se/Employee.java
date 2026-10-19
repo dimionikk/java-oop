@@ -7,12 +7,14 @@ public class Employee {
     private String position;
     private int age;
     private double salary;
+    private String email;
 
-    public Employee(String name, String position, int age, double salary) {
+    public Employee(String name, String position, int age, double salary, String email) {
         this.name = name;
         this.position = position;
         this.age = age;
         this.salary = salary;
+        this.email = email;
     }
 
     public String getName() {
@@ -47,6 +49,14 @@ public class Employee {
         this.salary = salary;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -54,6 +64,7 @@ public class Employee {
                 ", position='" + position + '\'' +
                 ", age=" + age +
                 ", salary=" + salary +
+                ", email='" + email + '\'' +
                 '}';
     }
 
@@ -64,11 +75,12 @@ public class Employee {
         return age == employee.age
                 && Double.compare(salary, employee.salary) == 0
                 && Objects.equals(name, employee.name)
-                && Objects.equals(position, employee.position);
+                && Objects.equals(position, employee.position)
+                && Objects.equals(email, employee.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, position, age, salary);
+        return Objects.hash(name, position, age, salary, email);
     }
 }

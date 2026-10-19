@@ -18,8 +18,8 @@ public class Main {
             String position = readText(scanner, "  Посада: ");
             int age = readInt(scanner, "  Вік: ", 16, 100);
             double salary = readDouble(scanner, "  Зарплата: ");
-
-            employees.add(new Employee(name, position, age, salary));
+            String email = readText(scanner, "  Email: ");
+            employees.add(new Employee(name, position, age, salary, email));
         }
 
         System.out.println("\nСписок працівників:");
