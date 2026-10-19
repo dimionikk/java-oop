@@ -1,5 +1,7 @@
 package ua.edu.sumdu.j2se.pr4;
 
+import java.util.Objects;
+
 public class Employee {
     private String name;
     private String position;
@@ -43,5 +45,30 @@ public class Employee {
 
     public void setSalary(double salary) {
         this.salary = salary;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "name='" + name + '\'' +
+                ", position='" + position + '\'' +
+                ", age=" + age +
+                ", salary=" + salary +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return age == employee.age
+                && Double.compare(salary, employee.salary) == 0
+                && Objects.equals(name, employee.name)
+                && Objects.equals(position, employee.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, position, age, salary);
     }
 }
