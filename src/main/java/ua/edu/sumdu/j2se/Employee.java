@@ -9,11 +9,14 @@ import java.util.regex.Pattern;
  * тому об'єкт не може містити некоректних даних.
  * Відділ передається ззовні і може бути спільним для кількох
  * працівників (агрегація).
+ * Клас рахує кількість успішно створених об'єктів.
  */
 public class Employee {
     private static final int MIN_AGE = 16;
     private static final int MAX_AGE = 100;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("[^@\\s]+@[^@\\s]+\\.[^@\\s]+");
+
+    private static int count = 0;
 
     private String name;
     private Position position;
@@ -24,6 +27,7 @@ public class Employee {
 
     /**
      * Створює працівника з перевіркою всіх параметрів.
+     * Лічильник об'єктів збільшується лише після успішної перевірки.
      *
      * @param name       ім'я, не порожнє
      * @param position   посада, не null
@@ -41,6 +45,16 @@ public class Employee {
         this.salary = requireSalary(salary);
         this.email = requireEmail(email);
         this.department = requireDepartment(department);
+        count++;
+    }
+
+    /**
+     * Повертає кількість успішно створених об'єктів класу.
+     *
+     * @return кількість створених працівників
+     */
+    public static int getCount() {
+        return count;
     }
 
     /**

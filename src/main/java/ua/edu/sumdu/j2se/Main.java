@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Консольний драйвер програми: меню для створення відділів і працівників
- * та виведення списку працівників.
+ * Консольний драйвер програми: меню для створення відділів і працівників,
+ * виведення списку працівників і кількості створених об'єктів.
  */
 public class Main {
 
@@ -25,6 +25,7 @@ public class Main {
             System.out.println("1 - Створити відділ");
             System.out.println("2 - Створити працівника");
             System.out.println("3 - Вивести всіх працівників");
+            System.out.println("4 - Кількість створених працівників");
             System.out.println("0 - Вихід");
             int choice = readInt(scanner, "Ваш вибір: ");
 
@@ -32,6 +33,7 @@ public class Main {
                 case 1 -> createDepartment(scanner, departments);
                 case 2 -> createEmployee(scanner, departments, employees);
                 case 3 -> printEmployees(employees);
+                case 4 -> System.out.println("Створено працівників: " + Employee.getCount());
                 case 0 -> {
                     System.out.println("Роботу завершено.");
                     return;
