@@ -49,6 +49,28 @@ public class Employee {
     }
 
     /**
+     * Конструктор копіювання: створює нового працівника з тими самими даними.
+     * Відділ не копіюється, копія посилається на той самий об'єкт
+     * {@link Department}, бо відділ не належить працівнику (агрегація).
+     * Лічильник об'єктів збільшується, бо копія є новим об'єктом.
+     *
+     * @param other працівник, якого копіюють, не null
+     * @throws IllegalArgumentException якщо other дорівнює null
+     */
+    public Employee(Employee other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Працівник для копіювання має бути заданий.");
+        }
+        this.name = other.name;
+        this.position = other.position;
+        this.age = other.age;
+        this.salary = other.salary;
+        this.email = other.email;
+        this.department = other.department;
+        count++;
+    }
+
+    /**
      * Повертає кількість успішно створених об'єктів класу.
      *
      * @return кількість створених працівників

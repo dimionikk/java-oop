@@ -6,7 +6,8 @@ import java.util.Scanner;
 
 /**
  * Консольний драйвер програми: меню для створення відділів і працівників,
- * виведення списку працівників і кількості створених об'єктів.
+ * копіювання працівників, виведення списку працівників
+ * і кількості створених об'єктів.
  */
 public class Main {
 
@@ -24,16 +25,18 @@ public class Main {
             System.out.println();
             System.out.println("1 - Створити відділ");
             System.out.println("2 - Створити працівника");
-            System.out.println("3 - Вивести всіх працівників");
-            System.out.println("4 - Кількість створених працівників");
+            System.out.println("3 - Копіювати працівника");
+            System.out.println("4 - Вивести всіх працівників");
+            System.out.println("5 - Кількість створених працівників");
             System.out.println("0 - Вихід");
             int choice = readInt(scanner, "Ваш вибір: ");
 
             switch (choice) {
                 case 1 -> createDepartment(scanner, departments);
                 case 2 -> createEmployee(scanner, departments, employees);
-                case 3 -> printEmployees(employees);
-                case 4 -> System.out.println("Створено працівників: " + Employee.getCount());
+                case 3 -> copyEmployee(scanner, employees);
+                case 4 -> printEmployees(employees);
+                case 5 -> System.out.println("Створено працівників: " + Employee.getCount());
                 case 0 -> {
                     System.out.println("Роботу завершено.");
                     return;
@@ -91,6 +94,32 @@ public class Main {
             System.out.println("Працівника додано.");
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Показує список працівників, зчитує номер обраного
+     * і додає до списку його копію, створену конструктором копіювання.
+     * Номер запитується повторно, доки він не потрапить у межі списку.
+     *
+     * @param scanner   джерело введення
+     * @param employees список працівників, до якого додається копія
+     */
+    private static void copyEmployee(Scanner scanner, List<Employee> employees) {
+        if (employees.isEmpty()) {
+            System.out.println("Немає працівників для копіювання.");
+            return;
+        }
+        printEmployees(employees);
+        while (true) {
+            int choice = readInt(scanner, "  Номер працівника: ");
+            if (choice >= 1 && choice <= employees.size()) {
+                Employee copy = new Employee(employees.get(choice - 1));
+                employees.add(copy);
+                System.out.println("Копію додано.");
+                return;
+            }
+            System.out.println("  Немає такого працівника.");
         }
     }
 
