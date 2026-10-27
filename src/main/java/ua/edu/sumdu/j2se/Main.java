@@ -12,11 +12,14 @@ import java.util.Scanner;
 public class Main {
 
     /**
-     * Точка входу. Показує меню, доки користувач не обере вихід.
+     * Точка входу. Виводить інформаційну шапку
+     * і показує меню, доки користувач не обере вихід.
      *
      * @param args аргументи командного рядка (не використовуються)
      */
     public static void main(String[] args) {
+        printHeader();
+
         Scanner scanner = new Scanner(System.in);
         List<Department> departments = new ArrayList<>();
         List<Employee> employees = new ArrayList<>();
@@ -44,6 +47,19 @@ public class Main {
                 default -> System.out.println("Немає такого пункту меню.");
             }
         }
+    }
+
+    /**
+     * Виводить інформаційну шапку програми: номер і тему роботи,
+     * варіант і виконавця.
+     */
+    private static void printHeader() {
+        System.out.println("==================================================");
+        System.out.println("Практична робота №6");
+        System.out.println("Тема: Класи, статичні члени, агрегація, перерахування (enum)");
+        System.out.println("Варіант: 4 (облік працівників)");
+        System.out.println("Виконав: студент гр. ІН-41/2 Образцов Д.Є.");
+        System.out.println("==================================================");
     }
 
     /**
