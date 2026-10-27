@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Тести перевірки вхідних даних класу {@link Employee}
- * та агрегації з класом {@link Department}.
+ * Тести класу {@link Employee}: перевірка вхідних даних,
+ * агрегація з класом {@link Department}, конструктор копіювання
+ * і статичний лічильник об'єктів.
  */
 class EmployeeTest {
 
@@ -109,5 +110,88 @@ class EmployeeTest {
         assertSame(first.getDepartment(), second.getDepartment());
         assertEquals("Тестування", first.getDepartment().getName());
         assertEquals("Тестування", second.getDepartment().getName());
+    }
+
+    /**
+     * Копія має ті самі дані, але є окремим об'єктом.
+     */
+    @Test
+    void shouldCreateEqualButSeparateCopy() {
+        Employee original = validEmployee();
+        Employee copy = new Employee(original);
+
+        assertEquals(original, copy);
+        assertNotSame(original, copy);
+    }
+
+    /**
+     * Зміна копії не впливає на оригінал.
+     */
+    @Test
+    void shouldNotChangeOriginalWhenCopyChanges() {
+        Employee original = validEmployee();
+        Employee copy = new Employee(original);
+
+        copy.setName("Олег");
+
+        assertEquals("Дмитро", original.getName());
+    }
+
+    /**
+     * Копія посилається на той самий відділ, що й оригінал.
+     */
+    @Test
+    void shouldShareDepartmentWithCopy() {
+        Employee original = validEmployee();
+        Employee copy = new Employee(original);
+
+        assertSame(original.getDepartment(), copy.getDepartment());
+    }
+
+    /**
+     * Копіювання null спричиняє виняток.
+     */
+    @Test
+    void shouldThrowExceptionWhenCopyingNull() {
+        assertThrows(IllegalArgumentException.class, () -> new Employee(null));
+    }
+
+    /**
+     * Успішне створення працівника збільшує лічильник на 1.
+     */
+    @Test
+    void shouldIncreaseCountWhenEmployeeCreated() {
+        int before = Employee.getCount();
+
+        validEmployee();
+
+        assertEquals(before + 1, Employee.getCount());
+    }
+
+    /**
+     * Невдале створення працівника не змінює лічильник.
+     */
+    @Test
+    void shouldNotIncreaseCountWhenCreationFails() {
+        int before = Employee.getCount();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new Employee("Іван", Position.DEVELOPER, 10, 30000.0, "ivan@mail.com",
+                        new Department("Розробка")));
+
+        assertEquals(before, Employee.getCount());
+    }
+
+    /**
+     * Копіювання створює новий об'єкт, тому лічильник збільшується на 1.
+     */
+    @Test
+    void shouldIncreaseCountWhenEmployeeCopied() {
+        Employee original = validEmployee();
+        int before = Employee.getCount();
+
+        new Employee(original);
+
+        assertEquals(before + 1, Employee.getCount());
     }
 }
