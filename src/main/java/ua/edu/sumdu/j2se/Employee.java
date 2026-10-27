@@ -4,37 +4,79 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
- * Працівник з ім'ям, посадою, віком, зарплатою та email.
+ * Працівник з ім'ям, посадою, віком, зарплатою, email і відділом.
  * Усі значення перевіряються в конструкторі та сетерах,
  * тому об'єкт не може містити некоректних даних.
+ * Відділ передається ззовні і може бути спільним для кількох
+ * працівників (агрегація).
+ * Клас рахує кількість успішно створених об'єктів.
  */
 public class Employee {
     private static final int MIN_AGE = 16;
     private static final int MAX_AGE = 100;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("[^@\\s]+@[^@\\s]+\\.[^@\\s]+");
 
+    private static int count = 0;
+
     private String name;
-    private String position;
+    private Position position;
     private int age;
     private double salary;
     private String email;
+    private Department department;
 
     /**
      * Створює працівника з перевіркою всіх параметрів.
+     * Лічильник об'єктів збільшується лише після успішної перевірки.
      *
-     * @param name     ім'я, не порожнє
-     * @param position посада, не порожня
-     * @param age      вік від 16 до 100
-     * @param salary   зарплата, невід'ємне скінченне число
-     * @param email    email у форматі name@domain.com
+     * @param name       ім'я, не порожнє
+     * @param position   посада, не null
+     * @param age        вік від 16 до 100
+     * @param salary     зарплата, невід'ємне скінченне число
+     * @param email      email у форматі name@domain.com
+     * @param department відділ, не null
      * @throws IllegalArgumentException якщо хоча б один параметр некоректний
      */
-    public Employee(String name, String position, int age, double salary, String email) {
+    public Employee(String name, Position position, int age, double salary, String email,
+                    Department department) {
         this.name = requireText(name, "Ім'я");
-        this.position = requireText(position, "Посада");
+        this.position = requirePosition(position);
         this.age = requireAge(age);
         this.salary = requireSalary(salary);
         this.email = requireEmail(email);
+        this.department = requireDepartment(department);
+        count++;
+    }
+
+    /**
+     * Конструктор копіювання: створює нового працівника з тими самими даними.
+     * Відділ не копіюється, копія посилається на той самий об'єкт
+     * {@link Department}, бо відділ не належить працівнику (агрегація).
+     * Лічильник об'єктів збільшується, бо копія є новим об'єктом.
+     *
+     * @param other працівник, якого копіюють, не null
+     * @throws IllegalArgumentException якщо other дорівнює null
+     */
+    public Employee(Employee other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Працівник для копіювання має бути заданий.");
+        }
+        this.name = other.name;
+        this.position = other.position;
+        this.age = other.age;
+        this.salary = other.salary;
+        this.email = other.email;
+        this.department = other.department;
+        count++;
+    }
+
+    /**
+     * Повертає кількість успішно створених об'єктів класу.
+     *
+     * @return кількість створених працівників
+     */
+    public static int getCount() {
+        return count;
     }
 
     /**
@@ -61,18 +103,18 @@ public class Employee {
      *
      * @return посада
      */
-    public String getPosition() {
+    public Position getPosition() {
         return position;
     }
 
     /**
      * Встановлює посаду працівника.
      *
-     * @param position нова посада, не порожня
-     * @throws IllegalArgumentException якщо посада null або порожня
+     * @param position нова посада, не null
+     * @throws IllegalArgumentException якщо посада null
      */
-    public void setPosition(String position) {
-        this.position = requireText(position, "Посада");
+    public void setPosition(Position position) {
+        this.position = requirePosition(position);
     }
 
     /**
@@ -133,6 +175,25 @@ public class Employee {
     }
 
     /**
+     * Повертає відділ працівника.
+     *
+     * @return відділ
+     */
+    public Department getDepartment() {
+        return department;
+    }
+
+    /**
+     * Встановлює відділ працівника.
+     *
+     * @param department новий відділ, не null
+     * @throws IllegalArgumentException якщо відділ null
+     */
+    public void setDepartment(Department department) {
+        this.department = requireDepartment(department);
+    }
+
+    /**
      * Повертає текстове представлення працівника з усіма полями.
      *
      * @return рядок з даними працівника
@@ -141,10 +202,11 @@ public class Employee {
     public String toString() {
         return "Employee{" +
                 "name='" + name + '\'' +
-                ", position='" + position + '\'' +
+                ", position=" + position.getTitle() +
                 ", age=" + age +
                 ", salary=" + salary +
                 ", email='" + email + '\'' +
+                ", department=" + department.getName() +
                 '}';
     }
 
@@ -162,7 +224,8 @@ public class Employee {
                 && Double.compare(salary, employee.salary) == 0
                 && Objects.equals(name, employee.name)
                 && Objects.equals(position, employee.position)
-                && Objects.equals(email, employee.email);
+                && Objects.equals(email, employee.email)
+                && Objects.equals(department, employee.department);
     }
 
     /**
@@ -172,7 +235,7 @@ public class Employee {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, position, age, salary, email);
+        return Objects.hash(name, position, age, salary, email, department);
     }
 
     /**
@@ -188,6 +251,20 @@ public class Employee {
             throw new IllegalArgumentException("Поле \"" + fieldName + "\" не може бути порожнім.");
         }
         return value.trim();
+    }
+
+    /**
+     * Перевіряє, що посада задана.
+     *
+     * @param position посада для перевірки
+     * @return та сама посада
+     * @throws IllegalArgumentException якщо посада null
+     */
+    private static Position requirePosition(Position position) {
+        if (position == null) {
+            throw new IllegalArgumentException("Посада має бути задана.");
+        }
+        return position;
     }
 
     /**
@@ -231,5 +308,19 @@ public class Employee {
             throw new IllegalArgumentException("Email має бути у форматі name@domain.com.");
         }
         return value;
+    }
+
+    /**
+     * Перевіряє, що відділ заданий.
+     *
+     * @param department відділ для перевірки
+     * @return той самий відділ
+     * @throws IllegalArgumentException якщо відділ null
+     */
+    private static Department requireDepartment(Department department) {
+        if (department == null) {
+            throw new IllegalArgumentException("Відділ має бути заданий.");
+        }
+        return department;
     }
 }
