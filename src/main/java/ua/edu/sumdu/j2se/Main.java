@@ -48,7 +48,7 @@ public class Main {
      */
     private static void createEmployee(Scanner scanner, List<Employee> employees) {
         String name = readText(scanner, "  Ім'я: ");
-        String position = readText(scanner, "  Посада: ");
+        Position position = readPosition(scanner);
         int age = readInt(scanner, "  Вік: ");
         double salary = readDouble(scanner, "  Зарплата: ");
         String email = readText(scanner, "  Email: ");
@@ -91,6 +91,28 @@ public class Main {
                 return line;
             }
             System.out.println("  Поле не може бути порожнім.");
+        }
+    }
+
+    /**
+     * Виводить список посад і зчитує номер обраної,
+     * повторюючи запит, доки номер не потрапить у межі списку.
+     *
+     * @param scanner джерело введення
+     * @return обрана посада
+     */
+    private static Position readPosition(Scanner scanner) {
+        Position[] positions = Position.values();
+        System.out.println("  Посада:");
+        for (int i = 0; i < positions.length; i++) {
+            System.out.println("    " + (i + 1) + " - " + positions[i].getTitle());
+        }
+        while (true) {
+            int choice = readInt(scanner, "  Номер посади: ");
+            if (choice >= 1 && choice <= positions.length) {
+                return positions[choice - 1];
+            }
+            System.out.println("  Немає такої посади.");
         }
     }
 

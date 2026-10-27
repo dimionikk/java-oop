@@ -14,7 +14,7 @@ public class Employee {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("[^@\\s]+@[^@\\s]+\\.[^@\\s]+");
 
     private String name;
-    private String position;
+    private Position position;
     private int age;
     private double salary;
     private String email;
@@ -23,15 +23,15 @@ public class Employee {
      * Створює працівника з перевіркою всіх параметрів.
      *
      * @param name     ім'я, не порожнє
-     * @param position посада, не порожня
+     * @param position посада, не null
      * @param age      вік від 16 до 100
      * @param salary   зарплата, невід'ємне скінченне число
      * @param email    email у форматі name@domain.com
      * @throws IllegalArgumentException якщо хоча б один параметр некоректний
      */
-    public Employee(String name, String position, int age, double salary, String email) {
+    public Employee(String name, Position position, int age, double salary, String email) {
         this.name = requireText(name, "Ім'я");
-        this.position = requireText(position, "Посада");
+        this.position = requirePosition(position);
         this.age = requireAge(age);
         this.salary = requireSalary(salary);
         this.email = requireEmail(email);
@@ -61,18 +61,18 @@ public class Employee {
      *
      * @return посада
      */
-    public String getPosition() {
+    public Position getPosition() {
         return position;
     }
 
     /**
      * Встановлює посаду працівника.
      *
-     * @param position нова посада, не порожня
-     * @throws IllegalArgumentException якщо посада null або порожня
+     * @param position нова посада, не null
+     * @throws IllegalArgumentException якщо посада null
      */
-    public void setPosition(String position) {
-        this.position = requireText(position, "Посада");
+    public void setPosition(Position position) {
+        this.position = requirePosition(position);
     }
 
     /**
@@ -141,7 +141,7 @@ public class Employee {
     public String toString() {
         return "Employee{" +
                 "name='" + name + '\'' +
-                ", position='" + position + '\'' +
+                ", position=" + position.getTitle() +
                 ", age=" + age +
                 ", salary=" + salary +
                 ", email='" + email + '\'' +
@@ -188,6 +188,20 @@ public class Employee {
             throw new IllegalArgumentException("Поле \"" + fieldName + "\" не може бути порожнім.");
         }
         return value.trim();
+    }
+
+    /**
+     * Перевіряє, що посада задана.
+     *
+     * @param position посада для перевірки
+     * @return та сама посада
+     * @throws IllegalArgumentException якщо посада null
+     */
+    private static Position requirePosition(Position position) {
+        if (position == null) {
+            throw new IllegalArgumentException("Посада має бути задана.");
+        }
+        return position;
     }
 
     /**
